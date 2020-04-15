@@ -46,9 +46,6 @@ func (d *Drawer) GetPath() string {
 }
 
 func (d *Drawer) Activate() error {
-	d.activated = true
-	d.close = make(chan interface{})
-
 	var err error
 	// check if the path already exist or not
 	if fstat, err := os.Stat(d.path); err == nil {
@@ -68,7 +65,11 @@ func (d *Drawer) Activate() error {
 
 	// load the content in file
 	err = d.load()
-	go d.mainLoop()
+	if err == nil {
+		d.close = make(chan interface{})
+		d.activated = true
+		go d.mainLoop()
+	}
 	return err
 }
 
