@@ -29,26 +29,35 @@ type Drawer struct {
 	flushLock     sync.Mutex
 }
 
+func NewDrawer(path string, serializer Serializer) *Drawer {
+	return &Drawer{
+		path:       path,
+		payload:    nil,
+		serializer: serializer,
+		activated:  false,
+
+		dirty: false,
+	}
+}
+
 func (d *Drawer) GetPath() string {
 	d.checkActivated()
 	return d.path
 }
 
-func (d *Drawer) Activate(path string, serializer Serializer) error {
+func (d *Drawer) Activate() error {
 	d.activated = true
-	d.path = path
-	d.serializer = serializer
 	d.close = make(chan interface{})
 
 	var err error
 	// check if the path already exist or not
-	if fstat, err := os.Stat(path); err == nil {
+	if fstat, err := os.Stat(d.path); err == nil {
 		if fstat.IsDir() {
 			return IsDirErr
 		}
 	}
 	// create the file (if it doesn't exist)
-	file, err := os.OpenFile(path, os.O_CREATE, 0644)
+	file, err := os.OpenFile(d.path, os.O_CREATE, 0644)
 	if err != nil {
 		return err
 	}

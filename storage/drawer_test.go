@@ -36,19 +36,19 @@ func checkErr(err error) {
 }
 
 func TestNormalUsage(t *testing.T) {
-	drawer := &Drawer{}
+	drawer := NewDrawer(filePath, serializer)
 	defer os.RemoveAll(filePath)
 
 	// write
-	err := drawer.Activate(filePath, serializer)
+	err := drawer.Activate()
 	checkErr(err)
 	drawer.Dump(data)
 	err = drawer.Terminate()
 	checkErr(err)
 
 	// read
-	drawer1 := &Drawer{}
-	err = drawer1.Activate(filePath, serializer)
+	drawer1 := NewDrawer(filePath, serializer)
+	err = drawer1.Activate()
 	checkErr(err)
 	var data1 *Data
 	data1, ok := drawer1.Expose().(*Data)
@@ -61,11 +61,11 @@ func TestNormalUsage(t *testing.T) {
 }
 
 func TestAutoFlush(t *testing.T) {
-	drawer := &Drawer{}
+	drawer := NewDrawer(filePath, serializer)
 	defer os.RemoveAll(filePath)
 
 	// write
-	err := drawer.Activate(filePath, serializer)
+	err := drawer.Activate()
 	checkErr(err)
 	drawer.Dump(data)
 
@@ -73,8 +73,8 @@ func TestAutoFlush(t *testing.T) {
 	time.Sleep(FlushInterval + time.Second)
 
 	// check if the data has been flushed
-	newDrawer := &Drawer{}
-	err = newDrawer.Activate(filePath, serializer)
+	newDrawer := NewDrawer(filePath, serializer)
+	err = newDrawer.Activate()
 	checkErr(err)
 	data1, ok := newDrawer.Expose().(*Data)
 	if !ok {
@@ -98,12 +98,12 @@ func TestStoreWithoutActivation(t *testing.T) {
 Every time drawer flushes, it should override previous content
 */
 func TestWriteFileMultipleTimes(t *testing.T) {
-	drawer := &Drawer{}
-	drawer.Activate(filePath, serializer)
+	drawer := NewDrawer(filePath, serializer)
+	drawer.Activate()
 	drawer.Terminate()
-	drawer.Activate(filePath, serializer)
+	drawer.Activate()
 	drawer.Terminate()
-	err := drawer.Activate(filePath, serializer)
+	err := drawer.Activate()
 	if err != nil {
 		panic(err)
 	}

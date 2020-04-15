@@ -14,7 +14,7 @@ type PStore interface {
 	/**
 	Start the drawer instance on path, if it doesn't exist on disk ,then create one
 	*/
-	Activate(path string, serializer Serializer) error
+	Activate() error
 
 	IsActivated() bool
 
