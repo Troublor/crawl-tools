@@ -85,7 +85,7 @@ func (d *Drawer) Terminate() error {
 	return err
 }
 
-func (d *Drawer) Dump(payload interface{}) {
+func (d *Drawer) Dump(payload interface{}) error {
 	d.checkActivated()
 	if !isPointer(payload) {
 		panic(NonPointerErr)
