@@ -9,7 +9,7 @@ var dirPath = "/Users/troublor/workspace/go/go_module/crawler-tools/data/cluster
 
 func TestCluster_Push(t *testing.T) {
 	defer os.RemoveAll(dirPath)
-	cluster, err := NewCluster(dirPath, serializer, 2, "test")
+	cluster, err := NewSliceCluster(dirPath, serializer, 2, "test")
 	if err != nil {
 		panic(err)
 	}
@@ -35,7 +35,7 @@ func TestCluster_Push(t *testing.T) {
 	}
 
 	// test read
-	cluster, err = NewCluster(dirPath, serializer, 2, "test")
+	cluster, err = NewSliceCluster(dirPath, serializer, 2, "test")
 	if err != nil {
 		panic(err)
 	}

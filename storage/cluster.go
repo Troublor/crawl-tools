@@ -7,8 +7,8 @@ import (
 	"path"
 )
 
-// Cluster is a persistent storage to store a very large array, the array will be split into several files
-type Cluster struct {
+// SliceCluster is a persistent storage to store a very large array, the array will be split into several files
+type SliceCluster struct {
 	dir               string // the dirPath of the dir to store the cluster files
 	prefix            string // prefix of each file name
 	activated         bool
@@ -20,8 +20,8 @@ type Cluster struct {
 	chunkSize int // the number of elements in each file
 }
 
-func NewCluster(path string, serializer Serializer, chunkSize int, prefix string) (*Cluster, error) {
-	cluster := &Cluster{
+func NewSliceCluster(path string, serializer Serializer, chunkSize int, prefix string) (*SliceCluster, error) {
+	cluster := &SliceCluster{
 		dir:               path,
 		prefix:            prefix,
 		activated:         true,
@@ -34,7 +34,7 @@ func NewCluster(path string, serializer Serializer, chunkSize int, prefix string
 	return cluster, nil
 }
 
-func (c *Cluster) Activate() error {
+func (c *SliceCluster) Activate() error {
 	// the dirPath needs to be a directory
 	if d, err := os.Stat(c.dir); err == nil {
 		// the directory exists
@@ -71,16 +71,16 @@ func (c *Cluster) Activate() error {
 	return nil
 }
 
-func (c *Cluster) IsActivated() bool {
+func (c *SliceCluster) IsActivated() bool {
 	return c.activated
 }
 
-func (c *Cluster) GetPath() string {
+func (c *SliceCluster) GetPath() string {
 	c.checkActivated()
 	return c.dir
 }
 
-func (c *Cluster) Terminate() error {
+func (c *SliceCluster) Terminate() error {
 	c.checkActivated()
 	c.activated = false
 	// terminate all chunks
@@ -97,7 +97,7 @@ func (c *Cluster) Terminate() error {
 /**
 Add an element at tail
 */
-func (c *Cluster) Push(payload interface{}) error {
+func (c *SliceCluster) Push(payload interface{}) error {
 	if len(c.chunks) == 0 || c.chunks[len(c.chunks)-1].isFull() {
 		// create a new chunk
 		index := len(c.chunks)
@@ -123,7 +123,7 @@ func (c *Cluster) Push(payload interface{}) error {
 	return nil
 }
 
-func (c *Cluster) Get(i int) (interface{}, error) {
+func (c *SliceCluster) Get(i int) (interface{}, error) {
 	if i < 0 || c.chunks == nil || len(c.chunks) == 0 {
 		return nil, IndexOutOfBoundaryErr
 	}
@@ -140,21 +140,21 @@ func (c *Cluster) Get(i int) (interface{}, error) {
 	return nil, IndexOutOfBoundaryErr
 }
 
-func (c *Cluster) Dump(payload interface{}) error {
+func (c *SliceCluster) Dump(payload interface{}) error {
 	panic("not implemented")
 }
 
-func (c *Cluster) Expose() interface{} {
+func (c *SliceCluster) Expose() interface{} {
 	panic("not implemented")
 }
 
-func (c *Cluster) checkActivated() {
+func (c *SliceCluster) checkActivated() {
 	if !c.activated {
 		panic(NotActivatedErr)
 	}
 }
 
-func (c *Cluster) chunkPath(index int) string {
+func (c *SliceCluster) chunkPath(index int) string {
 	return path.Join(c.dir, fmt.Sprintf("%s_chunk_%d.txt", c.prefix, index))
 }
 
