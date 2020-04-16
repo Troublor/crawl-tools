@@ -78,7 +78,9 @@ func (d *Drawer) IsActivated() bool {
 }
 
 func (d *Drawer) Terminate() error {
-	d.checkActivated()
+	if !d.IsActivated() {
+		return nil
+	}
 	d.activated = false
 	close(d.close)
 	err := d.flush()

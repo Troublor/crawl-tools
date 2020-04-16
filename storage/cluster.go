@@ -167,7 +167,7 @@ type chunk struct {
 
 func newChunk(path string, elementSerializer Serializer, index int, capacity int) *chunk {
 	return &chunk{
-		Drawer:   NewDrawer(path, newChunkSerializer(elementSerializer)),
+		Drawer:   NewDrawer(path, newSliceChunkSerializer(elementSerializer)),
 		index:    index,
 		capacity: capacity,
 	}
@@ -218,15 +218,15 @@ func (c *chunk) length() int {
 	return len(*content)
 }
 
-type chunkSerializer struct {
+type sliceChunkSerializer struct {
 	elementSerializer Serializer
 }
 
-func newChunkSerializer(elementSerializer Serializer) *chunkSerializer {
-	return &chunkSerializer{elementSerializer: elementSerializer}
+func newSliceChunkSerializer(elementSerializer Serializer) *sliceChunkSerializer {
+	return &sliceChunkSerializer{elementSerializer: elementSerializer}
 }
 
-func (s *chunkSerializer) Serialize(payload interface{}) ([]byte, error) {
+func (s *sliceChunkSerializer) Serialize(payload interface{}) ([]byte, error) {
 	contents := payload.(*[]interface{})
 	payloads := make([]string, len(*contents))
 	for index, elem := range *contents {
@@ -239,7 +239,7 @@ func (s *chunkSerializer) Serialize(payload interface{}) ([]byte, error) {
 	return json.Marshal(payloads)
 }
 
-func (s *chunkSerializer) Deserialize(data []byte) (interface{}, error) {
+func (s *sliceChunkSerializer) Deserialize(data []byte) (interface{}, error) {
 	var payloads []string
 	err := json.Unmarshal(data, &payloads)
 	if err != nil {
