@@ -12,14 +12,14 @@ One PStore is a persistent storage that can only store one object
 */
 type PStore interface {
 	/**
-	Start the drawer instance on path, if it doesn't exist on disk ,then create one
+	Start the drawer instance on dirPath, if it doesn't exist on disk ,then create one
 	*/
 	Activate() error
 
 	IsActivated() bool
 
 	/**
-	Get the storage file path
+	Get the storage file dirPath
 	*/
 	GetPath() string
 

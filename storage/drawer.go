@@ -19,7 +19,7 @@ It is thread safe.
 type Drawer struct {
 	path       string
 	payload    interface{} // the payload should be a pointer to an object
-	serializer Serializer  // serializer is given by user, which is used to serialize and deserialize object
+	serializer Serializer  // elementSerializer is given by user, which is used to serialize and deserialize object
 	activated  bool
 
 	// flags to facilitate periodical flushing
@@ -47,7 +47,7 @@ func (d *Drawer) GetPath() string {
 
 func (d *Drawer) Activate() error {
 	var err error
-	// check if the path already exist or not
+	// check if the dirPath already exist or not
 	if fstat, err := os.Stat(d.path); err == nil {
 		if fstat.IsDir() {
 			return IsDirErr
@@ -94,6 +94,7 @@ func (d *Drawer) Dump(payload interface{}) error {
 	d.payload = payload
 	d.payloadRwLock.Unlock()
 	d.dirty = true
+	return nil
 }
 
 func (d *Drawer) Expose() interface{} {

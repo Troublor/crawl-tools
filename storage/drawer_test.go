@@ -27,7 +27,7 @@ func (s DataSerializer) Deserialize(data []byte) (interface{}, error) {
 
 var data = &Data{Msg: "hello"}
 var serializer = DataSerializer{}
-var filePath = "/Users/troublor/workspace/dArcher/refiler/data/drawer_test.txt"
+var filePath = "/Users/troublor/workspace/go/go_module/crawler-tools/data/drawer_test.txt"
 
 func checkErr(err error) {
 	if err != nil {
