@@ -3,10 +3,8 @@ package storage
 import (
 	"io/ioutil"
 	"os"
-	"os/signal"
 	"reflect"
 	"sync"
-	"syscall"
 	"time"
 )
 
@@ -162,18 +160,10 @@ the loop will periodically flush payload to file and monitor to INT signal, and 
 */
 func (d *Drawer) mainLoop() {
 	timer := time.After(FlushInterval)
-	sig := make(chan os.Signal)
-	signal.Notify(sig, os.Interrupt, syscall.SIGTERM)
 	for {
 		select {
 		case <-d.close:
 			return
-		case <-sig:
-			// got an interrupt signal from OS
-			err := d.Terminate()
-			if err != nil {
-				panic(err)
-			}
 		case <-timer:
 			if d.dirty {
 				err := d.flush()
