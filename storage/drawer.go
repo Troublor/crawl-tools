@@ -27,6 +27,7 @@ type Drawer struct {
 	close         chan interface{}
 	payloadRwLock sync.RWMutex
 	flushLock     sync.Mutex
+	terminateLock sync.Mutex
 }
 
 func NewDrawer(path string, serializer Serializer) *Drawer {
@@ -78,6 +79,8 @@ func (d *Drawer) IsActivated() bool {
 }
 
 func (d *Drawer) Terminate() error {
+	d.terminateLock.Lock()
+	defer d.terminateLock.Unlock()
 	if !d.IsActivated() {
 		return nil
 	}

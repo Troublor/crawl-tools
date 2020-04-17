@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"path"
+	"sync"
 )
 
 // SliceCluster is a persistent storage to store a very large array, the array will be split into several files
@@ -18,6 +19,8 @@ type SliceCluster struct {
 	chunks []*chunk
 
 	chunkSize int // the number of elements in each file
+
+	terminateLock sync.Mutex
 }
 
 func NewSliceCluster(path string, serializer Serializer, chunkSize int, prefix string) (*SliceCluster, error) {
@@ -81,7 +84,11 @@ func (c *SliceCluster) GetPath() string {
 }
 
 func (c *SliceCluster) Terminate() error {
-	c.checkActivated()
+	c.terminateLock.Lock()
+	defer c.terminateLock.Unlock()
+	if !c.IsActivated() {
+		return nil
+	}
 	c.activated = false
 	// terminate all chunks
 	for _, chunk := range c.chunks {
